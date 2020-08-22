@@ -10,5 +10,12 @@ const postTarea = async ( tarea ) =>{
     return respuesta
 }
 
+const updateTarea = async (_id, tareaParaActualizar )=>{
+    console.log(`😄 ${_id}`)
+    console.log(tareaParaActualizar)
+    const tareaActualizada = await ModeloTarea.findByIdAndUpdate(_id, tareaParaActualizar,{new: true})
+    return tareaActualizada
+}
 
-module.exports = { getTareas, postTarea }
+
+module.exports = { getTareas, postTarea, updateTarea }
