@@ -17,5 +17,11 @@ const updateTarea = async (_id, tareaParaActualizar )=>{
     return tareaActualizada
 }
 
+const deleteTarea = async (_id)=>{
+    console.log(`😄 ${_id}`)
+    const respuesta = await ModeloTarea.findByIdAndDelete(_id)
+    return respuesta
+}
 
-module.exports = { getTareas, postTarea, updateTarea }
+
+module.exports = { getTareas, postTarea, updateTarea, deleteTarea }

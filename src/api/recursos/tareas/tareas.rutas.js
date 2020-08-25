@@ -1,7 +1,7 @@
 const express = require('express')
 const tareasRutas = express.Router()
 
-const { getTareas, postTarea, updateTarea } = require('./tareas.controlador')
+const { getTareas, postTarea, updateTarea, deleteTarea } = require('./tareas.controlador')
 
 
 tareasRutas.get('/', async (req, res)=>{
@@ -32,12 +32,18 @@ tareasRutas.put('/:id', async (req, res)=>{
     } catch (error) {
         res.status(400).json({response: "Error al actualizar la tarea"})
     }
-
 })
 
 
-tareasRutas.delete('/:id',(req,res)=>{
+tareasRutas.delete('/:id',async (req,res)=>{
     const idTarea = req.params.id
+    try {
+        const respuesta = await deleteTarea(idTarea)
+        res.status(201).json({response: respuesta})
+        console.log("hahahah")
+    } catch (error) {
+        res.status(400).json({response: "No se pudo eliminar el usuario"})
+    }
 })
 
 
