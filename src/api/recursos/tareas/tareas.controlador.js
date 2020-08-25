@@ -1,7 +1,7 @@
 const { ModeloTarea } = require('./tareas.modelo')
 
 const getTareas  = async()=>{
-    const tareas = await ModeloTarea.find()
+    const tareas = await ModeloTarea.find({es_activo: true}).exec()
     return tareas
 }
 
