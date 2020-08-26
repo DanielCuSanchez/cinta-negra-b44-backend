@@ -1,7 +1,9 @@
 const express = require('express')
 const usuariosRutas = express.Router()
+const bcrypt = require('bcrypt')
 
 const { getUsuarios, postUsuario, updateUsuario } = require('./usuarios.controlador')
+const { validadorUsuarios } = require('./usuarios.validator')
 const { respuesta } = require('../../utilidades/respuesta')
 
 
@@ -28,8 +30,17 @@ usuariosRutas.get('/:id', async (req, res)=>{
     }
 })
 
-usuariosRutas.post('/', async (req, res)=>{
+usuariosRutas.post('/',validadorUsuarios, async (req, res)=>{
     const usuario = req.body
+    //Technique 1
+    // bcrypt.hash(usuario.password, 10).then(function(hash) {
+    //     // Store hash in your password DB.
+    //     console.log(hash)
+    //     usuario.password = hash
+    // })
+    //Technique 2
+    const hash = bcrypt.hashSync(usuario.password, 10)
+    usuario.password = hash
     try {
         const respuesta = await postUsuario(usuario)
         res.status(201).json({response: respuesta})
