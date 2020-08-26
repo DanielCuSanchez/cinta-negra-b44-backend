@@ -1,4 +1,4 @@
-const {  Schema, Model } = require('mongoose')
+const {  Schema, model } = require('mongoose')
 
 const usuarioSchema = new Schema({
     nombre: String,
@@ -7,6 +7,9 @@ const usuarioSchema = new Schema({
     es_activo: { default: true, type: Boolean }
 },{timestamps: true})
 
-const ModeloUsuario = Model('usuarios', usuarioSchema)
+const ModeloUsuario = model('usuarios', usuarioSchema)
+
+
+
 
 module.exports = { ModeloUsuario }

@@ -5,7 +5,7 @@ const getUsuarios  = async(_id)=>{
     if(!_id){
         respuesta = await ModeloUsuario.find({es_activo: true}).exec()
     }else{
-        respuesta = await ModeloUsuario.findById(_id,{es_activo: true}).exec()
+        respuesta = await ModeloUsuario.findOne({_id, es_activo: true})
     }
     return respuesta
 }

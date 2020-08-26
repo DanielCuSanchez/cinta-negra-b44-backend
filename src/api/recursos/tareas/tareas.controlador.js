@@ -2,10 +2,8 @@ const { ModeloTarea } = require('./tareas.modelo')
 
 
 const getTareas  = async(_id)=>{
-    let respuesta
     const jsonConfig = _id ? {_id, es_activo: true} : {es_activo: true}
-    console.log(jsonConfig)
-    respuesta = await ModeloTarea.find(jsonConfig).exec()
+    const respuesta = await ModeloTarea.find(jsonConfig).exec()
     return respuesta
 }
 
