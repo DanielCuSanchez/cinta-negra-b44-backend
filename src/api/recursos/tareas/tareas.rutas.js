@@ -16,6 +16,19 @@ tareasRutas.get('/', async (req, res)=>{
         respuesta.error(req, res, 400, "Error")
     }
 })
+
+tareasRutas.get('/:id', async (req, res)=>{
+    const idTarea = req.params.id
+    try {
+        const tarea = await getTareas(idTarea)
+        //res.status(200).json({response: tareas})
+        respuesta.success(req, res, 200, tarea)
+    } catch (error) {
+        //res.status(400).json({response: "Error"})
+        respuesta.error(req, res, 400, "Error")
+    }
+})
+
 tareasRutas.post('/', validadorTareas, async (req, res)=>{
     const tarea = req.body
     try {
