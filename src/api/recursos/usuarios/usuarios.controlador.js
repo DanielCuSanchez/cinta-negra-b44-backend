@@ -1,4 +1,5 @@
 const { ModeloUsuario } = require('./usuarios.modelo')
+const { ModeloTarea } = require('../tareas/tareas.modelo')
 
 const getUsuarios  = async(_id)=>{
     let respuesta
@@ -21,12 +22,22 @@ const updateUsuario = async (_id, UsuarioParaActualizar )=>{
     const UsuarioActualizada = await ModeloUsuario.findByIdAndUpdate(_id, UsuarioParaActualizar,{new: true})
     return UsuarioActualizada
 }
-
 const deleteUsuario = async (_id)=>{
     console.log(`😄 ${_id}`)
     const respuesta = await ModeloUsuario.findByIdAndDelete(_id)
     return respuesta
 }
+//CRUD interaccion tareas
+const getTareasUsuarios = async(_id)=>{
+    const usuario = await ModeloUsuario.findById({_id}).populate('tareas')
+    return usuario.tareas
+}
+const postTareaUsuario = async(_id, tareaUsuario)=>{
+    const Usuario = await getUsuarios(_id)
+    const tareaCreada = await ModeloTarea.create(tareaUsuario)
+    Usuario.tareas.push(tareaCreada._id)
+    await Usuario.save()
+    return tareaCreada
+}
 
-
-module.exports = { getUsuarios, postUsuario, updateUsuario, deleteUsuario }
+module.exports = { getUsuarios, postUsuario, updateUsuario, deleteUsuario, getTareasUsuarios, postTareaUsuario }
