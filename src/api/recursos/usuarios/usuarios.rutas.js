@@ -2,12 +2,12 @@ const express = require('express')
 const usuariosRutas = express.Router()
 const bcrypt = require('bcrypt')
 
-const { getUsuarios, postUsuario, updateUsuario, getTareasUsuarios, postTareaUsuario } = require('./usuarios.controlador')
+const { getUsuarios, postUsuario, updateUsuario, getTareasUsuarios, postTareaUsuario, getUsuarioTarea } = require('./usuarios.controlador')
 const { validadorUsuarios } = require('./usuarios.validator')
 const { respuesta } = require('../../utilidades/respuesta')
 
 //Logica de CRUD usuario
-usuariosRutas.get('/', async (req, res)=>{
+usuariosRutas.get('/',async (req, res)=>{
     try {
         const usuarios = await getUsuarios()
         //res.status(200).json({response: usuarios})
@@ -84,8 +84,16 @@ usuariosRutas.get('/:idUsuario/tareas',async (req, res)=>{
         respuesta.error(req, res, 400, 'No se pudo consultar las tareas')
     }
 })
-usuariosRutas.get('/:idUsuario/tareas/:idTarea',(req, res)=>{
-    
+usuariosRutas.get('/:idUsuario/tareas/:idTarea',async (req, res)=>{
+    const idUsuario = req.params.idUsuario
+    const idTarea = req.params.idTarea
+    console.log('INFOOOO!', idUsuario, idTarea)
+    try {
+        const tarea = await getUsuarioTarea(idUsuario,idTarea)
+        respuesta.success(req, res, 200, tarea)
+    } catch (error) {
+        respuesta.error(req, res, 400, 'Error al buscar la tarea')
+    }
 })
 usuariosRutas.post('/:idUsuario/tareas', async (req, res)=>{
     const idUsuario = req.params.idUsuario

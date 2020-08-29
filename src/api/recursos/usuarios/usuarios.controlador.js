@@ -32,6 +32,12 @@ const getTareasUsuarios = async(_id)=>{
     const usuario = await ModeloUsuario.findById({_id}).populate('tareas')
     return usuario.tareas
 }
+const getUsuarioTarea = async(_idUsuario,_idTarea )=>{
+    const usuario = await ModeloUsuario.findOne({_id: _idUsuario}).populate('tareas')
+    const { tareas } = usuario
+    const [tarea] = tareas.filter(e => e._id == _idTarea)
+    return tarea
+}
 const postTareaUsuario = async(_id, tareaUsuario)=>{
     const Usuario = await getUsuarios(_id)
     const tareaCreada = await ModeloTarea.create(tareaUsuario)
@@ -40,4 +46,5 @@ const postTareaUsuario = async(_id, tareaUsuario)=>{
     return tareaCreada
 }
 
-module.exports = { getUsuarios, postUsuario, updateUsuario, deleteUsuario, getTareasUsuarios, postTareaUsuario }
+
+module.exports = { getUsuarios, postUsuario, updateUsuario, deleteUsuario, getTareasUsuarios, postTareaUsuario, getUsuarioTarea}
