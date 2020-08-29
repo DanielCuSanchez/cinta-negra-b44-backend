@@ -1,50 +1,114 @@
 const { ModeloUsuario } = require('./usuarios.modelo')
 const { ModeloTarea } = require('../tareas/tareas.modelo')
+const { respuesta } = require('../../utilidades/respuesta')
 
-const getUsuarios  = async(_id)=>{
-    let respuesta
-    if(!_id){
-        respuesta = await ModeloUsuario.find({es_activo: true}).exec()
-    }else{
-        respuesta = await ModeloUsuario.findOne({_id, es_activo: true})
+const getUsuarios  = async(req, res)=>{
+    try {
+        const usuarios = await ModeloUsuario.find({es_activo: true}).exec()
+        respuesta.success(req, res, 200, usuarios)
+    } catch (error) {
+        respuesta.error(req, res, 400, 'Error al buscar usuarios')
     }
-    return respuesta
 }
 
-const postUsuario = async ( Usuario ) =>{
-    const respuesta = await ModeloUsuario.create(Usuario)
-    return respuesta
+const getUsuario = async(req, res)=>{
+    const _id = req.params.id
+    try {
+        const usuario = await ModeloUsuario.findOne({_id, es_activo: true})
+        respuesta.success(req, res, 200, usuario)
+    } catch (error) {
+        respuesta.error(req, res, 400, 'Error al buscar un usuario')
+    }
 }
 
-const updateUsuario = async (_id, UsuarioParaActualizar )=>{
-    console.log(`😄 ${_id}`)
-    console.log(UsuarioParaActualizar)
-    const UsuarioActualizada = await ModeloUsuario.findByIdAndUpdate(_id, UsuarioParaActualizar,{new: true})
-    return UsuarioActualizada
+const postUsuario = async ( req, res ) =>{
+    const usuario = req.body
+    try {
+        const usuarioCreado = await ModeloUsuario.create(usuario)
+        respuesta.success(req, res, 201, usuarioCreado)
+    } catch (error) {
+        respuesta.error(req, res, 400, 'Error al crear el usuario')
+    }
 }
-const deleteUsuario = async (_id)=>{
-    console.log(`😄 ${_id}`)
-    const respuesta = await ModeloUsuario.findByIdAndDelete(_id)
-    return respuesta
+const updateUsuario = async (req, res)=>{
+    const _id = req.params.id
+    const usuarioParaActualizar = req.body
+    try {
+        const usuarioActualizado = await ModeloUsuario.findByIdAndUpdate(_id, usuarioParaActualizar,{new: true})
+        respuesta.success(req, res, 200, usuarioActualizado)
+    } catch (error) {
+        respuesta.error(req, res, 400, 'Error al actualizar usuario')
+    }
+}
+const deleteUsuario = async (req, res)=>{
+    const _id = req.params.id
+    try {
+        const usuarioEliminado = await ModeloUsuario.findByIdAndUpdate(_id, {es_activo: false},{new: true})
+        respuesta.success(req, res, 200, usuarioEliminado)
+    } catch (error) {
+        respuesta.error(req, res, 400, 'Error al eliminar usuario')
+    }
 }
 //CRUD interaccion tareas
-const getTareasUsuarios = async(_id)=>{
-    const usuario = await ModeloUsuario.findById({_id}).populate('tareas')
-    return usuario.tareas
+const getUsuariosTareas = async(req, res)=>{
+    const _id = req.params.idUsuario
+    try {
+        const usuario = await ModeloUsuario.findById({_id}).populate('tareas')
+        const { tareas } = usuario
+        respuesta.success(req, res, 200, tareas)
+    } catch (error) {
+        respuesta.error(req, res, 400, 'Error al buscar las tareas de usuario')
+    }
 }
-const getUsuarioTarea = async(_idUsuario,_idTarea )=>{
-    const usuario = await ModeloUsuario.findOne({_id: _idUsuario}).populate('tareas')
-    const { tareas } = usuario
-    const [tarea] = tareas.filter(e => e._id == _idTarea)
-    return tarea
+const getUsuarioTarea = async(req,res )=>{
+    const idUsuario = req.params.idUsuario
+    const idTarea = req.params.idTarea
+    try {
+        const usuario = await ModeloUsuario.findOne({_id: idUsuario}).populate('tareas')
+        const { tareas } = usuario
+        const [tarea] = tareas.filter(e => e._id == idTarea)
+        respuesta.success(req, res, 200, tarea)
+    } catch (error) {
+        respuesta.error(req, res, 400, 'Error al consultar la tarea de usuario')
+    }
 }
-const postTareaUsuario = async(_id, tareaUsuario)=>{
-    const Usuario = await getUsuarios(_id)
-    const tareaCreada = await ModeloTarea.create(tareaUsuario)
-    Usuario.tareas.push(tareaCreada._id)
-    await Usuario.save()
-    return tareaCreada
+const postUsuarioTarea = async(req, res)=>{
+    const _id = req.params.idUsuario
+    const tareaUsuario = req.body
+    const tareaCrear = {...tareaUsuario, usuario: _id } //operador spread js
+    try {
+        const Usuario = await ModeloUsuario.findOne({_id,es_activo: true})
+        console.log('MODELO',Usuario)
+        const tareaCreada = await ModeloTarea.create(tareaCrear)
+        Usuario.tareas.push(tareaCreada._id)
+        await Usuario.save()
+        respuesta.success(req, res, 201, tareaCreada)
+    } catch (error) {
+        respuesta.error(req, res, 400, 'Error al crear la tarea de usuario')
+    }
+}
+const updateUsuarioTarea = async(req, res)=>{
+    const idUsuario = req.params.idUsuario
+    const idTarea = req.params.idTarea
+    const tareaNueva = req.body
+    try {
+        const tareaActualizada = await ModeloTarea.findByIdAndUpdate({_id: idTarea, usuario: idUsuario, es_activo: true },tareaNueva, {new: true})
+        respuesta.success(req, res, 201, tareaActualizada)
+    } catch (error) {
+        respuesta.error(req, res, 400, 'Error al actualizar la tarea')
+    }
 }
 
-
-module.exports = { getUsuarios, postUsuario, updateUsuario, deleteUsuario, getTareasUsuarios, postTareaUsuario, getUsuarioTarea}
+module.exports = {
+//CRUD USUARIOS
+getUsuarios,
+getUsuario,
+postUsuario,
+updateUsuario,
+deleteUsuario,
+//CRUD USUARAIO - TAREA
+getUsuariosTareas,
+getUsuarioTarea,
+postUsuarioTarea,
+updateUsuarioTarea
+}

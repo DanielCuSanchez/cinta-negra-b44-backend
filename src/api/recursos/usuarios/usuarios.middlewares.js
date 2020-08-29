@@ -1,4 +1,5 @@
 const Joi = require('@hapi/joi')
+const bcrypt = require('bcrypt')
 const { respuesta } = require('../../utilidades/respuesta')
 const schemaValidadorUsuarios = Joi.object({
     nombre: Joi.string().min(3).required(),
@@ -17,4 +18,10 @@ const validadorUsuarios = (req, res, next)=>{
         respuesta.error(req, res, 400, errores)
     }
 }
-module.exports = { validadorUsuarios }
+const hasheoPassword = (req, res, next)=>{
+    const usuario = req.body
+    const passwordHasheada = bcrypt.hashSync(usuario.password, 10)
+    usuario.password = passwordHasheada
+    next()
+}
+module.exports = { validadorUsuarios, hasheoPassword }
