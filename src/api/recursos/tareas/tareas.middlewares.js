@@ -7,8 +7,6 @@ const schemaValidadorTareas = Joi.object({
     contenido: Joi.string().min(5).required()
 })
 
-
-
 const validadorTareas = (req, res, next)=>{
     const tarea = req.body
     const { error } = schemaValidadorTareas.validate(tarea, { abortEarly: false })

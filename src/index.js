@@ -1,7 +1,5 @@
 const express = require('express')
 const { initDatabase } = require('./database')
-const { tareasRutas } = require('./api/recursos/tareas/tareas.rutas')
-const { routerUsuarios } = require('./api/recursos/usuarios/usuarios.rutas')
 
 const app = express()
 
@@ -11,8 +9,8 @@ app.use(express.json())
 initDatabase()
 
 
-app.use('/tareas',tareasRutas)
-app.use('/usuarios', routerUsuarios)
+app.use('/tareas',require('./api/recursos/tareas/tareas.rutas'))
+app.use('/usuarios', require('./api/recursos/usuarios/usuarios.rutas'))
 app.use('/auth', require('./api/recursos/rutasAutenticacion') )
 
 

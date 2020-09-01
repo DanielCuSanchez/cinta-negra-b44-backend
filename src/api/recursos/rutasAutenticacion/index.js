@@ -1,10 +1,9 @@
 const express = require('express')
-const router = express.Router()
-const { signup, login} = require('../usuarios/usuarios.controlador')
+const routerAuth = express.Router()
+const { usuariosControlador } = require('../usuarios/usuarios.controlador')
 const { validadorUsuarios, hasheoPassword, validadorLogin } = require('../usuarios/usuarios.middlewares')
 
+routerAuth.post('/signup', validadorUsuarios, hasheoPassword, usuariosControlador.signup)
+routerAuth.post('/login', validadorLogin, usuariosControlador.login)
 
-router.post('/signup',validadorUsuarios,hasheoPassword, signup)
-router.post('/login',validadorLogin, login)
-
-module.exports = router
+module.exports = routerAuth

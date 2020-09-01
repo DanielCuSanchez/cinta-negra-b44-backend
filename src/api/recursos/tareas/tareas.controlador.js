@@ -1,29 +1,58 @@
 const { ModeloTarea } = require('./tareas.modelo')
+const {respuesta} = require('../../utilidades/respuesta')
 
 
-const getTareas  = async(_id)=>{
-    const jsonConfig = _id ? {_id, es_activo: true} : {es_activo: true}
-    const respuesta = await ModeloTarea.find(jsonConfig).exec()
-    return respuesta
+const tareasControlador = {
+    getTareas : async(req, res)=>{
+        try {
+            const tareas = await ModeloTarea.find()
+            if(!tareas) return respuesta.error(req, res, 400, 'No hay ninguna tarea')
+            respuesta.success(req, res, 200, tareas)
+        } catch (error) {
+            respuesta.error(req,res,400,'Error al consultar las tareas')
+        }
+    },
+    getTarea : async(req, res)=>{
+        const _id = req.params.idTarea
+        try {
+            const tarea = await ModeloTarea.find(_id).exec()
+            if(!tarea) return respuesta.error(req,res,400,'No hay tarea')
+            respuesta.success(req, res, 200, tarea)
+        } catch (error) {
+            respuesta.error(req, res, 400,'Error al consultar la tarea')
+        }
+    },
+    postTarea : async ( req, res ) =>{
+        const tarea = req.body
+        try {
+            const tareaCreada = await ModeloTarea.create(tarea)
+            if(!tareaCreada) return respuesta.error(req,res,400,'Error al crear tarea')
+            respuesta.success(req, res, 201, tareaCreada)
+        } catch (error) {
+            respuesta.error(req, res, 400, 'Error durante la creacion de la tarea')
+        }
+    },
+    updateTarea : async (req, res )=>{
+        const _id = req.params.idTarea
+        try {
+            const tareaActualizada = await ModeloTarea.findByIdAndUpdate(_id, tareaParaActualizar,{new: true})
+            if(!tareaActualizada) return respuesta.error(req, res, 400, 'Error al actualizar la tarea')
+            respuesta.success(req, res, 200, tareaActualizada)
+        } catch (error) {
+            respuesta.error(req, res, 400, 'Error durante la actualizacion de la tarea')
+        }
+    },
+    deleteTarea:  async (req, res)=>{
+        const _id = req.params.idTarea
+        try {
+            const tareaEliminada = await ModeloTarea.findByIdAndDelete(_id)
+            if(!tareaEliminada) return respuesta.error(req, res, 400, 'Error al eliminar la tarea')
+            respuesta.success(req, res, 200,tareaEliminada)
+        } catch (error) {
+            respuesta.error(req, res, 400, 'Error durante la eliminacion de la tarea')
+        }
+    }
 }
 
-const postTarea = async ( tarea ) =>{
-    const respuesta = await ModeloTarea.create(tarea)
-    return respuesta
-}
 
-const updateTarea = async (_id, tareaParaActualizar )=>{
-    console.log(`😄 ${_id}`)
-    console.log(tareaParaActualizar)
-    const tareaActualizada = await ModeloTarea.findByIdAndUpdate(_id, tareaParaActualizar,{new: true})
-    return tareaActualizada
-}
-
-const deleteTarea = async (_id)=>{
-    console.log(`😄 ${_id}`)
-    const respuesta = await ModeloTarea.findByIdAndDelete(_id)
-    return respuesta
-}
-
-
-module.exports = { getTareas, postTarea, updateTarea, deleteTarea }
+module.exports = { tareasControlador }
