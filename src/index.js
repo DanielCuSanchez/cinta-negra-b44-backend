@@ -1,7 +1,7 @@
 const express = require('express')
 const { initDatabase } = require('./database')
 const { tareasRutas } = require('./api/recursos/tareas/tareas.rutas')
-const { usuariosRutas } = require('./api/recursos/usuarios/usuarios.rutas')
+const { routerUsuarios } = require('./api/recursos/usuarios/usuarios.rutas')
 
 const app = express()
 
@@ -12,7 +12,8 @@ initDatabase()
 
 
 app.use('/tareas',tareasRutas)
-app.use('/usuarios', usuariosRutas)
+app.use('/usuarios', routerUsuarios)
+app.use('/auth', require('./api/recursos/rutasAutenticacion') )
 
 
 

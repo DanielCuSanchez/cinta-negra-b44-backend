@@ -1,3 +1,6 @@
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
+
 const { ModeloUsuario } = require('./usuarios.modelo')
 const { ModeloTarea } = require('../tareas/tareas.modelo')
 const { respuesta } = require('../../utilidades/respuesta')
@@ -53,7 +56,7 @@ const deleteUsuario = async (req, res)=>{
 const getUsuariosTareas = async(req, res)=>{
     const _id = req.params.idUsuario
     try {
-        const usuario = await ModeloUsuario.findById({_id}).populate('tareas')
+        const usuario = await ModeloUsuario.findById({_id}).populate('tareas', {es_activo: true})
         const { tareas } = usuario
         respuesta.success(req, res, 200, tareas)
     } catch (error) {
@@ -64,9 +67,9 @@ const getUsuarioTarea = async(req,res )=>{
     const idUsuario = req.params.idUsuario
     const idTarea = req.params.idTarea
     try {
-        const usuario = await ModeloUsuario.findOne({_id: idUsuario}).populate('tareas')
-        const { tareas } = usuario
-        const [tarea] = tareas.filter(e => e._id == idTarea)
+        const Usuario = await ModeloUsuario.findOne({_id: idUsuario}).populate('tareas', {es_activo: true})
+        const { tareas } = Usuario
+        const [tarea] = tareas.filter(tarea => tarea._id == idTarea)
         respuesta.success(req, res, 200, tarea)
     } catch (error) {
         respuesta.error(req, res, 400, 'Error al consultar la tarea de usuario')
@@ -98,7 +101,45 @@ const updateUsuarioTarea = async(req, res)=>{
         respuesta.error(req, res, 400, 'Error al actualizar la tarea')
     }
 }
+const deleteUsuarioTarea = async(req, res)=>{
+    const {idUsuario, idTarea} = req.params
+    try {
+        const Usuario = await ModeloUsuario.findOne({_id: idUsuario,es_activo: true})
+        if(!Usuario)return respuesta.error(req, res, 400, 'Error usuario no encontrado')
+        const Tarea = await ModeloTarea.findOne({_id: idTarea, es_activo: true})
+        if(!Tarea)return respuesta.error(req, res, 400, 'Error tarea no encontrada')
+        if(Tarea.usuario.toString() !== idUsuario.toString() ) return respuesta.error(req, res, 400, 'Error la tarea no es del usuario')
+        Tarea.es_activo = false
+        await Tarea.save()
+        respuesta.success(req, res, 200, Tarea)
+    } catch (error) {
+        respuesta.error(req, res, 400, 'Error al eliminar la tarea')
+    }
+}
 
+//rutas auth
+const signup = async ( req, res ) =>{
+    const usuario = req.body
+    try {
+        const usuarioCreado = await ModeloUsuario.create(usuario)
+        respuesta.success(req, res, 201, usuarioCreado)
+    } catch (error) {
+        respuesta.error(req, res, 400, 'Error al hacer signup')
+    }
+}
+const login  = async(req, res )=>{
+    const { email, password } = req.body
+    try {
+        const Usuario = await ModeloUsuario.findOne({email, es_activo: true})
+        if(!Usuario) return respuesta.error(req, res, 400, 'Error usuario no encontrado')
+        const esValidaLaPassword = bcrypt.compareSync(password, Usuario.password)
+        if(!esValidaLaPassword) return respuesta.error(req, res, 400, 'Error credenciales invalidas')
+        const token = jwt.sign({email, password},process.env.SECRET_JWT,{ expiresIn: '30s' })
+        respuesta.success(req, res, 200, token)
+    } catch (error) {
+        respuesta.error(req,res, 400,'Error al hacer login')
+    }
+}
 module.exports = {
 //CRUD USUARIOS
 getUsuarios,
@@ -110,5 +151,9 @@ deleteUsuario,
 getUsuariosTareas,
 getUsuarioTarea,
 postUsuarioTarea,
-updateUsuarioTarea
+updateUsuarioTarea,
+deleteUsuarioTarea,
+//rutas auth
+signup,
+login
 }

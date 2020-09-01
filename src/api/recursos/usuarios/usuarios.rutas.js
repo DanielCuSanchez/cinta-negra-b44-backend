@@ -1,5 +1,5 @@
 const express = require('express')
-const usuariosRutas = express.Router()
+const routerUsuarios = express.Router()
 const {
     getUsuarios,
     getUsuario,
@@ -9,25 +9,22 @@ const {
     getUsuariosTareas,
     getUsuarioTarea,
     postUsuarioTarea,
-    updateUsuarioTarea
+    updateUsuarioTarea,
+    deleteUsuarioTarea
 } = require('./usuarios.controlador')
 const { validadorUsuarios, hasheoPassword } = require('./usuarios.middlewares')
-const { respuesta } = require('../../utilidades/respuesta')
-
 //Logica de CRUD usuario
-usuariosRutas.get('/',getUsuarios)
-usuariosRutas.get('/:id', getUsuario)
-usuariosRutas.post('/',validadorUsuarios, hasheoPassword, postUsuario)
-usuariosRutas.put('/:id', updateUsuario)
-usuariosRutas.delete('/:id',deleteUsuario)
+routerUsuarios.get('/',getUsuarios)
+routerUsuarios.get('/:id', getUsuario)
+routerUsuarios.post('/',validadorUsuarios, hasheoPassword, postUsuario)
+routerUsuarios.put('/:id', updateUsuario)
+routerUsuarios.delete('/:id',deleteUsuario)
 
 //Logica de CRUD interaccion con las tareas
-usuariosRutas.get('/:idUsuario/tareas',getUsuariosTareas)
-usuariosRutas.get('/:idUsuario/tareas/:idTarea', getUsuarioTarea)
-usuariosRutas.post('/:idUsuario/tareas', postUsuarioTarea)
-usuariosRutas.put('/:idUsuario/tareas/:idTarea',updateUsuarioTarea)
-//usuariosRutas.delete('/:idUsuario/tareas/:idTarea',updateUsuarioTarea)
-usuariosRutas.delete('/:idUsuario/tareas/',(req, res)=>{
-})
+routerUsuarios.get('/:idUsuario/tareas',getUsuariosTareas)
+routerUsuarios.get('/:idUsuario/tareas/:idTarea', getUsuarioTarea)
+routerUsuarios.post('/:idUsuario/tareas', postUsuarioTarea)
+routerUsuarios.put('/:idUsuario/tareas/:idTarea',updateUsuarioTarea)
+routerUsuarios.delete('/:idUsuario/tareas/:idTarea',deleteUsuarioTarea)
 
-module.exports = { usuariosRutas }
+module.exports = { routerUsuarios }
