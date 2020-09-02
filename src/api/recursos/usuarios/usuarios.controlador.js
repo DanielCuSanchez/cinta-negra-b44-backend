@@ -76,6 +76,9 @@ const usuariosControlador = {
             respuesta.error(req, res, 400, 'Error al consultar la tarea de usuario')
         }
     },
+    getUsuariosFiltroTareas: async(req, res)=>{
+        console.log(req.query.q)
+    },
     postUsuarioTarea : async(req, res)=>{
         const _id = req.params.idUsuario
         const tareaUsuario = req.body

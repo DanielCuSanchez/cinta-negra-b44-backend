@@ -12,6 +12,7 @@ routerUsuarios.delete('/:id',usuariosControlador.deleteUsuario)
 
 //Logica de CRUD interaccion con las tareas
 routerUsuarios.get('/:idUsuario/tareas',usuariosControlador.getUsuariosTareas)
+routerUsuarios.get('/:idUsuario/tareas?q',usuariosControlador.getUsuariosFiltroTareas)
 routerUsuarios.get('/:idUsuario/tareas/:idTarea', usuariosControlador.getUsuarioTarea)
 routerUsuarios.post('/:idUsuario/tareas',validadorTareas, usuariosControlador.postUsuarioTarea)
 routerUsuarios.put('/:idUsuario/tareas/:idTarea',usuariosControlador.updateUsuarioTarea)
