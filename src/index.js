@@ -2,10 +2,11 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const { initDatabase } = require('./database')
+const { PUERTO } = require('./api/config')
 
 const app = express()
 
-const PORT = 3000
+const PORT = PUERTO
 
 app.use(cors())
 app.use(morgan('dev'))

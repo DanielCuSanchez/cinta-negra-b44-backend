@@ -1,10 +1,10 @@
 
 const mongoose = require('mongoose')
-const URL = process.env.URL_MONGODB
+const { URL_MONGODB } = require('./api/config')
 
 
 const initDatabase = ()=>{
-    mongoose.connect(URL,
+    mongoose.connect(URL_MONGODB,
         {
             useNewUrlParser: true,
             useUnifiedTopology: true
