@@ -16,4 +16,5 @@ routerUsuarios.get('/:idUsuario/tareas/:idTarea', usuariosControlador.getUsuario
 routerUsuarios.post('/:idUsuario/tareas',validadorTareas, usuariosControlador.postUsuarioTarea)
 routerUsuarios.put('/:idUsuario/tareas/:idTarea',usuariosControlador.updateUsuarioTarea)
 routerUsuarios.delete('/:idUsuario/tareas/:idTarea',usuariosControlador.deleteUsuarioTarea)
+
 module.exports =  routerUsuarios

@@ -131,10 +131,11 @@ const usuariosControlador = {
         const { email, password } = req.body
         try {
             const Usuario = await ModeloUsuario.findOne({email, es_activo: true})
+            const { _id } = Usuario
             if(!Usuario) return respuesta.error(req, res, 400, 'Error usuario no encontrado')
             const esValidaLaPassword = bcrypt.compareSync(password, Usuario.password)
             if(!esValidaLaPassword) return respuesta.error(req, res, 400, 'Error credenciales invalidas')
-            const token = jwt.sign({email, password},process.env.SECRET_JWT,{ expiresIn: '30s' })
+            const token = jwt.sign({_id},process.env.SECRET_JWT,{ expiresIn: '1d' })
             respuesta.success(req, res, 200, token)
         } catch (error) {
             respuesta.error(req,res, 400,'Error al hacer login')
